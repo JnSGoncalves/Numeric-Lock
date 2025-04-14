@@ -8,7 +8,7 @@ pEntrada EQU 60h
 Main:
 				MOV R6, #pSenha
 				CALL Teclado
-
+EntradaSenha:
 				MOV R6, #pEntrada
 				CALL Teclado
 
@@ -19,13 +19,12 @@ Main:
 
 				CJNE R3, #00h, SenhaErrada
 
-				JMP $
-
-SenhaErrada:
-				CALL Delay5s
 				JMP Main
 
-; ---------------- COMPARAÇÃO DE SENHAS ----------------
+SenhaErrada:
+				CALL Delay5
+				JMP EntradaSenha
+
 Compare:
 				; R7 ponteiro senha correta
 				; R6 ponteiro senha digitada
@@ -117,19 +116,15 @@ espera:
 				JNB P0.4, espera
 				RET
 
-; ---------------- DELAY DE 5 SEGUNDOS ----------------
-Delay5s:
-				MOV R1, #5 ; repete 5 vezes delay de ~1s
 
-DelayLoop1s:
+Delay5:
+				MOV R1, #5 ; repete 5 vezes o delay
+DelayLoops:
 				MOV R2, #250
 Loop1:
 				MOV R3, #255
 Loop2:
-				MOV R4, #255
-Loop3:
-				DJNZ R4, Loop3
 				DJNZ R3, Loop2
 				DJNZ R2, Loop1
-				DJNZ R1, DelayLoop1s
+				DJNZ R1, DelayLoops
 				RET
