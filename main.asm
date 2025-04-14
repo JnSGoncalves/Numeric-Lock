@@ -19,7 +19,6 @@ Main:
 
 				CJNE R3, #00h, SenhaErrada
 
-				; Senha correta - colocar aqui a lógica que quiser (ex: abrir menu, acender LED, etc.)
 				JMP $
 
 SenhaErrada:
