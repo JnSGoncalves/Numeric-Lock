@@ -6,11 +6,11 @@ pEntrada EQU 60h
 
            ORG 0100H
 ; LEDs
-; P0.0 - Fechado
-; P0.1 - Aberto
-; P0.6 - Digitar a nova senha
-; P0.7 - Digitar a senha de abertura
-; P0.2 - Senha incorreta
+; P2.0 - Fechado
+; P2.1 - Aberto
+; P2.6 - Digitar a nova senha
+; P2.7 - Digitar a senha de abertura
+; P2.2 - Senha incorreta
 
 Setup:
 				MOV P2, #0FFh
