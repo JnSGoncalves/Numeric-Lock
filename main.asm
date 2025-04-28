@@ -1,14 +1,31 @@
            ORG 0000H
-           LJMP Main
+           LJMP Setup
 
 pSenha   EQU 50h
 pEntrada EQU 60h
 
            ORG 0100H
+; LEDs
+; P2.0 - Fechado
+; P2.1 - Aberto
+; P2.6 - Digitar a nova senha
+; P2.7 - Digitar a senha de abertura
+; P2.2 - Senha incorreta
+
+Setup:
+				MOV P2, #0FFh
+				CLR P2.0
 Main:
+				CLR P2.6
 				MOV R6, #pSenha
 				CALL Teclado
+
+				SETB P2.1
+				CLR P2.0
+				SETB P2.6
+
 EntradaSenha:
+				CLR P2.7
 				MOV R6, #pEntrada
 				CALL Teclado
 
@@ -18,17 +35,23 @@ EntradaSenha:
 				CALL Compare
 
 				CJNE R3, #00h, SenhaErrada
+				SETB P2.7
+				SETB P2.0
+				CLR P2.1
 
 				JMP Main
 
 SenhaErrada:
+				CLR P2.2
 				CALL Delay5
+				SETB P2.2
 				JMP EntradaSenha
 
 Compare:
 				; R7 ponteiro senha correta
 				; R6 ponteiro senha digitada
 				; R4 tamanho da senha
+				; R3 retorna #01 para incorreto
 				MOV R2, #0H
 				MOV R3, #0H
 		CompLoop:
@@ -58,6 +81,9 @@ Compare:
 
 ; ---------------- ENTRADA VIA TECLADO ----------------
 Teclado:
+		; Entrada R6 do inicio do ponteiro
+		; da memoria RAM para armazenar os 6
+		; valores
 				MOV A, #0H
 				MOV R5, #0H
 		Loop:
