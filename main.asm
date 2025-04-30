@@ -15,6 +15,8 @@ pEntrada EQU 60h
 Setup:
 				MOV P2, #0FFh
 				CLR P2.0
+				MOV R0, #0 ; contador de erros = 0
+
 Main:
 				CLR P2.6
 				MOV R6, #pSenha
@@ -35,23 +37,23 @@ EntradaSenha:
 				CALL Compare
 
 				CJNE R3, #00h, SenhaErrada
+
+				; senha correta
+				MOV R0, #0 ; zera contador de erros
 				SETB P2.7
 				SETB P2.0
 				CLR P2.1
-
 				JMP Main
 
 SenhaErrada:
+				INC R0 ; aumenta tentativas incorretas
 				CLR P2.2
-				CALL Delay5
+				MOV A, R0
+				CALL DelayVar ; delay proporcional ao erro
 				SETB P2.2
 				JMP EntradaSenha
 
 Compare:
-				; R7 ponteiro senha correta
-				; R6 ponteiro senha digitada
-				; R4 tamanho da senha
-				; R3 retorna #01 para incorreto
 				MOV R2, #0H
 				MOV R3, #0H
 		CompLoop:
@@ -79,11 +81,7 @@ Compare:
 		compReturn:
 				RET
 
-; ---------------- ENTRADA VIA TECLADO ----------------
 Teclado:
-		; Entrada R6 do inicio do ponteiro
-		; da memoria RAM para armazenar os 6
-		; valores
 				MOV A, #0H
 				MOV R5, #0H
 		Loop:
@@ -92,28 +90,19 @@ Teclado:
 				RET
 
 Linha:
-				MOV R0, #01 ; valor da tecla
-
-				; Linha 0
+				MOV R0, #01
 				SETB P0.0
 				CLR P0.3
 				CALL colScan
-
-				; Linha 1
 				SETB P0.3
 				CLR P0.2
 				CALL colScan
-
-				; Linha 2
 				SETB P0.2
 				CLR P0.1
 				CALL colScan
-
-				; Linha 3
 				SETB P0.1
 				CLR P0.0
 				CALL colScan
-
 				RET
 
 colScan:
@@ -135,22 +124,22 @@ guardar:
 				MOV A, R2
 				MOV @R1, A
 				INC R5
-
 espera:
 				JNB P0.6, espera
 				JNB P0.5, espera
 				JNB P0.4, espera
 				RET
 
-
-Delay5:
-				MOV R1, #5 ; repete 5 vezes o delay
-DelayLoops:
+; ---------------- DELAY VARIÁVEL ----------------
+DelayVar:
+				; A contém o multiplicador do tempo
+				MOV R1, A
+DelayLoop:
 				MOV R2, #250
 Loop1:
 				MOV R3, #255
 Loop2:
 				DJNZ R3, Loop2
 				DJNZ R2, Loop1
-				DJNZ R1, DelayLoops
+				DJNZ R1, DelayLoop
 				RET
