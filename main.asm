@@ -43,6 +43,19 @@ EntradaSenha:
 				SETB P2.7
 				SETB P2.0
 				CLR P2.1
+
+				; Ligando o motor para abrir a porta (girar em uma direção)
+				SETB P1.0
+				CLR P1.1
+				
+				
+				; Delay opcional para deixar o motor ligado por um tempo
+				ACALL DelayMotor
+
+				; Parar o motor após delay
+				CLR P1.0
+				CLR P1.1
+
 				JMP Main
 
 SenhaErrada:
@@ -128,6 +141,18 @@ espera:
 				JNB P0.6, espera
 				JNB P0.5, espera
 				JNB P0.4, espera
+				RET
+
+DelayMotor:
+				MOV R1, #10     ; tempo do motor ligado
+MotorLoop1:
+				MOV R2, #255
+MotorLoop2:
+				MOV R3, #255
+MotorLoop3:
+				DJNZ R3, MotorLoop3
+				DJNZ R2, MotorLoop2
+				DJNZ R1, MotorLoop1
 				RET
 
 ; ---------------- DELAY VARIÁVEL ----------------
